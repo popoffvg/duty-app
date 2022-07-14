@@ -1,0 +1,15 @@
+domain: "localhost"
+port: "8080"
+
+db:
+    username: "postgres"
+    host: "localhost"
+    port: "5432"
+    dbname: "postgres"
+    sslmode: "disable"
+
+cookies:
+    access_name: "access"
+    access_lifetime: "86400"
+    refresh_name: "refresh"
+    refresh_lifetime: "172800"

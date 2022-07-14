@@ -1,0 +1,16 @@
+migrate create -ext sql -dir ./schema -seq init
+migrate -path ./schema -database 'postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable' up
+migrate -path ./schema -database 'postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable' down
+
+При ошибке миграции (error: Dirty database version 1. Fix and force version)
+1 docker ps
+2 docker exec -it <container_id> bin/bash
+3 psql
+4 select * from schema_migrations;
+5 update schema_migrations set version='1', dirty='f';
+
+
+docker ps
+docker exec -it 2e37ad5b2471 /bin/bash
+#> psql
+postgres=# \d

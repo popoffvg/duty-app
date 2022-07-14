@@ -1,0 +1,542 @@
+basePath: /
+definitions:
+  handler.errorMessage:
+    properties:
+      message:
+        type: string
+    type: object
+  handler.listTeammatesResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.Teammate'
+        type: array
+    type: object
+  handler.listTeamsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.Team'
+        type: array
+    type: object
+  model.SignInInput:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  model.Team:
+    properties:
+      id:
+        type: integer
+      title:
+        minLength: 3
+        type: string
+      user_id:
+        type: integer
+    required:
+    - title
+    type: object
+  model.Teammate:
+    properties:
+      duties:
+        type: integer
+      duty_readiness:
+        type: boolean
+      id:
+        type: integer
+      name:
+        minLength: 3
+        type: string
+      team_id:
+        type: integer
+    required:
+    - name
+    type: object
+  model.UpdateTeamInput:
+    properties:
+      title:
+        minLength: 3
+        type: string
+    required:
+    - title
+    type: object
+  model.UpdateTeammateInput:
+    properties:
+      duties:
+        type: integer
+      duty_readiness:
+        type: boolean
+      name:
+        type: string
+    type: object
+  model.User:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - name
+    - password
+    - username
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API Server for Duty manager application
+  title: Duty manager API
+  version: "2.0"
+paths:
+  /api/teammates/:id:
+    delete:
+      consumes:
+      - application/json
+      description: delete teammate by id
+      operationId: delete-teammate
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: teammate deleted
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete teammate
+      tags:
+      - teammates
+    get:
+      consumes:
+      - application/json
+      description: read teammate by id
+      operationId: read-teammate
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Teammate'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+      security:
+      - ApiKeyAuth: []
+      summary: Read teammate
+      tags:
+      - teammates
+    put:
+      consumes:
+      - application/json
+      description: update teammate by id
+      operationId: update-teammate
+      parameters:
+      - description: teammate info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateTeammateInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: teammate updated
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+      security:
+      - ApiKeyAuth: []
+      summary: Update teammate
+      tags:
+      - teammates
+  /api/teams:
+    get:
+      consumes:
+      - application/json
+      description: List all teams
+      operationId: list-teams
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.listTeamsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+      security:
+      - ApiKeyAuth: []
+      summary: List teams
+      tags:
+      - teams
+    post:
+      consumes:
+      - application/json
+      description: create new team
+      operationId: create-team
+      parameters:
+      - description: team info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.Team'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+      security:
+      - ApiKeyAuth: []
+      summary: Create team
+      tags:
+      - teams
+  /api/teams/:id:
+    delete:
+      consumes:
+      - application/json
+      description: Delete team by id
+      operationId: delete-team
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: team deleted
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete team
+      tags:
+      - teams
+    get:
+      consumes:
+      - application/json
+      description: Read team by id
+      operationId: read-team
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Team'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+      security:
+      - ApiKeyAuth: []
+      summary: Read team
+      tags:
+      - teams
+    put:
+      consumes:
+      - application/json
+      description: Update team by id
+      operationId: update-team
+      parameters:
+      - description: team info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateTeamInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: team updated
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+      security:
+      - ApiKeyAuth: []
+      summary: Update team
+      tags:
+      - teams
+  /api/teams/:id/teammates:
+    get:
+      consumes:
+      - application/json
+      description: list all teammates
+      operationId: list-teammates
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.listTeammatesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+      security:
+      - ApiKeyAuth: []
+      summary: List teammate
+      tags:
+      - teammates
+    post:
+      consumes:
+      - application/json
+      description: create new teammate
+      operationId: create-teammate
+      parameters:
+      - description: teammate info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.Teammate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+      security:
+      - ApiKeyAuth: []
+      summary: Create teammate
+      tags:
+      - teammates
+  /auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: login
+      operationId: login
+      parameters:
+      - description: credentials
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.SignInInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: token
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+      summary: SignIn
+      tags:
+      - auth
+  /auth/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: create account
+      operationId: create-account
+      parameters:
+      - description: account info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorMessage'
+      summary: Sign-up
+      tags:
+      - auth
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

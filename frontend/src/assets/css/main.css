@@ -1,0 +1,128 @@
+#app {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
+}
+nav {
+    padding: 30px;
+}
+nav a {
+    font-weight: bold;
+    color: #2c3e50;
+}
+nav a.router-link-exact-active {
+    color: #42b983;
+}
+
+.teams-table thead, tbody, tfoot, tr, td, th {
+    text-align: left;
+    vertical-align: middle !important;
+}
+.teams-table th:nth-of-type(3) {
+    text-align: center;
+}
+.teams-table td:nth-of-type(1) {
+    width:40px;
+}
+.teams-table td:nth-of-type(3) {
+    width:165px;
+}
+
+.table-header {
+    text-align: left;
+}
+.add-button {
+    text-align: right;
+    margin-top: -43px;
+    padding-bottom: 10px;
+    text-align: right;
+}
+.add-button button {
+    background-color: green;
+}
+.delete-button {
+    background-color: red !important;
+}
+.modal-buttons button {
+    margin: 10px;
+}
+.duties-container {
+    padding-bottom: 35px;
+}
+.duty-type-col {
+    max-width: 80px;
+    padding-top: 7px;
+}
+.duty-date-col {
+    max-width: 145px;
+    padding-top: 7px;
+}
+.duty-teammate-col {
+    max-width: 250px;
+}
+.duty-spacer {
+    height: 10px;
+}
+.delete-duty{
+    background-color: red;
+}
+.duty-delete-col {
+    max-width: 60px;
+    margin-left: -16px;
+}
+
+.duties-table thead, tbody, tfoot, tr, td, th {
+    text-align: left;
+    vertical-align: middle !important;
+}
+.duties-table td:nth-of-type(1) {
+    width:40px;
+}
+.history-block {
+    text-align: left;
+    padding-top: 15px;
+}
+
+/* Modal */
+/* The Modal (background) */
+.modal {
+    display: block;
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: right;
+    margin-top: -9px;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
