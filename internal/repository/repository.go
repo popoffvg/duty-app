@@ -18,6 +18,8 @@ type Team interface {
 	Update(userId, teamId int, input model.UpdateTeamInput) error
 	Delete(userId, teamId int) error
 	List(userId int) ([]model.Team, error)
+
+	GetTeamInfo(teamId int) (model.Team, error)
 }
 
 type Teammate interface {
@@ -26,6 +28,8 @@ type Teammate interface {
 	Update(userId, teammateId int, input model.UpdateTeammateInput) error
 	Delete(userId, teammateId int) error
 	List(userId, teamId int) ([]model.Teammate, error)
+
+	ListReadyTeammates(teamId int) ([]model.Teammate, error)
 }
 
 type Duty interface {
@@ -36,6 +40,9 @@ type Duty interface {
 
 	ReadCurrent(userId, teamId int, dailyDate, weeklyDate time.Time) ([]model.Duty, error)
 	History(userId, teamId int) ([]model.History, error)
+
+	FindLastDuty(isDaily bool, dailyDate time.Time) ([]model.Duty, error)
+	CreateNextDuty(duty model.Duty) (int, error)
 }
 
 type Repository struct {

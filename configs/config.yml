@@ -1,5 +1,6 @@
 domain: "localhost"
 port: "8080"
+duty_job_schedule: "@every 10s"
 
 db:
     username: "postgres"

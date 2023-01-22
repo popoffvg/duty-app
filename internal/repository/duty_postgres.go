@@ -118,5 +118,53 @@ func (dp *DutyPostgres) History(userId, teamId int) ([]model.History, error) {
 	}
 
 	return history, nil
+}
 
+// todo refactoring: привести к единообразию в sql-запросах - либо с алиасами, либо без них (...FROM table AS asd)
+
+func (dp *DutyPostgres) FindLastDuty(isDaily bool, date time.Time) ([]model.Duty, error) {
+	var duties []model.Duty
+
+	// get top 1 (in group)
+	// select distinct on (team_id) id, team_id, date from duties where date > current_date - 6 order by team_id, date desc;
+
+	// get top N (in group) - window function https://ubiq.co/database-blog/how-to-get-first-row-per-group-in-postgresql/
+	// select * from (select *, row_number() over (partition by team_id order by date desc) as row_number from duties where date > current_date - 6) temp where row_number=N;
+
+	// get last daily duty for every team in 3 last days
+	query := fmt.Sprintf(`SELECT DISTINCT ON (team_id)
+									id, team_id, teammate_id, is_daily, date 
+									FROM %s WHERE is_daily = $1 AND date > $2
+									ORDER BY team_id, date desc`, dutiesTable)
+	if err := dp.db.Select(&duties, query, isDaily, date); err != nil {
+		return nil, err
+	}
+
+	return duties, nil
+}
+
+func (dp *DutyPostgres) CreateNextDuty(duty model.Duty) (int, error) {
+	var id int
+	var exists bool
+
+	// check duty intersection (with duty.date duty)
+	query := fmt.Sprintf(`SELECT EXISTS (SELECT 1 FROM %s
+									WHERE team_id=$1 AND is_daily=$2 AND date=$3)`, dutiesTable)
+	row := dp.db.QueryRow(query, duty.TeamId, duty.IsDaily, duty.Date)
+	if err := row.Scan(&exists); err != nil {
+		return 0, err
+	}
+
+	if exists {
+		return 0, fmt.Errorf("duty on date %q is already exists (is daily?: %t)", duty.Date, duty.IsDaily)
+	}
+
+	// create new duty
+	query = fmt.Sprintf(`INSERT INTO %s (team_id, teammate_id, is_daily, date) 
+									VALUES ($1, $2, $3, $4) RETURNING id`, dutiesTable)
+	row = dp.db.QueryRow(query, duty.TeamId, duty.TeammateId, duty.IsDaily, duty.Date)
+	if err := row.Scan(&id); err != nil {
+		return 0, err
+	}
+	return id, nil
 }

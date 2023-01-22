@@ -182,7 +182,7 @@ func (h *Handler) listDuties(c *gin.Context) {
 // @Failure 400,404 {object} errorMessage
 // @Failure 500 {object} errorMessage
 // @Failure default {object} errorMessage
-// @Router /api/teammates/:id [get]
+// @Router /api/teams/:id/duties/now [get]
 func (h *Handler) readDuties(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
@@ -239,4 +239,36 @@ func (h *Handler) historyDuties(c *gin.Context) {
 	c.JSON(http.StatusOK, listDutiesHistoryResponse{
 		Data: history,
 	})
+}
+
+// @Summary Send notification about daily duty
+// @Security ApiKeyAuth
+// @Tags duties
+// @Description create notification about daily duty
+// @ID notify-daily-duty
+// @Accept  json
+// @Produce  json
+// @Success 200 {integer} integer 1
+// @Failure 400,404 {object} errorMessage
+// @Failure 500 {object} errorMessage
+// @Failure default {object} errorMessage
+// @Router /api/teams/:id/duties/notify-daily [post]
+func (h *Handler) notifyDailyDuty(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		return
+	}
+
+	dutyId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		errorResponse(c, http.StatusBadRequest, "invalid id param")
+		return
+	}
+
+	if err = h.services.Duty.Delete(userId, dutyId); err != nil {
+		errorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, statusMessage{Status: "duty deleted"})
 }

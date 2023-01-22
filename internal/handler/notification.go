@@ -1,10 +1,15 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+)
+
+const (
+	testMessage = "test message from Duty-app"
 )
 
 // @Summary Send test notification in team's Space channel
@@ -18,7 +23,7 @@ import (
 // @Failure 400,404 {object} errorMessage
 // @Failure 500 {object} errorMessage
 // @Failure default {object} errorMessage
-// @Router /api/teams/:id/test-notify [post]
+// @Router /api/teams/:id/test-notification [post]
 func (h *Handler) sendTestNotification(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
@@ -31,11 +36,21 @@ func (h *Handler) sendTestNotification(c *gin.Context) {
 		return
 	}
 
-	team, err := h.services.Team.(userId, teamId)
+	// if user is not owner, error is occurred. TODO: maybe it needs check - IsOwner(userId, teamId) (bool, error)
+	team, err := h.services.Team.Read(userId, teamId)
 	if err != nil {
 		errorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, team)
+	if team.SpaceChannel != "" {
+		err = h.services.Notifier.SendNotification(team.SpaceChannel, testMessage)
+		if err != nil {
+			errorResponse(c, http.StatusInternalServerError, err.Error())
+			return
+		}
+		c.JSON(http.StatusOK, fmt.Sprintf("test notification was send to channel: %s", team.SpaceChannel))
+	}
+
+	errorResponse(c, http.StatusInternalServerError, "can't send notification: team channel is empty")
 }

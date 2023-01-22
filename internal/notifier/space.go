@@ -1,10 +1,18 @@
-package notification
+package notifier
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"net"
 	"net/http"
+	"time"
+)
+
+const (
+	httpClientTimeout   = 10 * time.Second
+	tlsHandshakeTimeout = 5 * time.Second
+	dialTimeout         = 5 * time.Second
 )
 
 type Payload struct {
@@ -18,8 +26,9 @@ type Content struct {
 }
 
 type SpaceClient struct {
-	endpoint string
-	token    string
+	endpoint   string
+	token      string
+	httpClient *http.Client
 }
 
 func NewSpaceClient(endpoint, token string) (*SpaceClient, error) {
@@ -27,9 +36,22 @@ func NewSpaceClient(endpoint, token string) (*SpaceClient, error) {
 		return nil, fmt.Errorf("space client: endpoint or token is empty")
 	}
 
+	var netTransport = &http.Transport{
+		DialContext: (&net.Dialer{
+			Timeout: dialTimeout,
+		}).DialContext,
+		TLSHandshakeTimeout: tlsHandshakeTimeout,
+	}
+
+	var httpClient = &http.Client{
+		Timeout:   httpClientTimeout,
+		Transport: netTransport,
+	}
+
 	return &SpaceClient{
-		endpoint: endpoint,
-		token:    token,
+		endpoint:   endpoint,
+		token:      token,
+		httpClient: httpClient,
 	}, nil
 }
 
@@ -41,6 +63,8 @@ func (sc *SpaceClient) SendNotification(channelName, text string) error {
 			Text:      text,
 		},
 	}
+
+	fmt.Println("---", channelName, text)
 
 	payloadBytes, err := json.Marshal(data)
 	if err != nil {
@@ -56,7 +80,7 @@ func (sc *SpaceClient) SendNotification(channelName, text string) error {
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := sc.httpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("http client error: %w", err)
 	}

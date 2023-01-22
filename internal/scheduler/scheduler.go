@@ -1,28 +1,47 @@
-package cron
+package scheduler
 
 import (
+	"context"
+	"fmt"
 	"time"
 
 	"github.com/robfig/cron/v3"
 )
 
-type Scheduler struct {
+type Job interface {
+	Run()
 }
 
-func (s *Scheduler) NewScheduler() {
-	var scheduler *cron.Cron
+type Scheduler struct {
+	jobRunner *cron.Cron
+}
 
+func NewScheduler() (*Scheduler, error) {
 	locationTime, err := time.LoadLocation("Europe/Moscow")
 	if err != nil {
-		return
+		return nil, fmt.Errorf("can not set location time in scheduler: %w", err)
 	}
 
-	scheduler = cron.New(cron.WithLocation(locationTime))
-	scheduler.AddFunc("", s.UpdateDuties)
+	scheduler := Scheduler{
+		jobRunner: cron.New(cron.WithLocation(locationTime)),
+	}
 
-	go scheduler.Run()
+	return &scheduler, nil
 }
 
-func (s *Scheduler) UpdateDuties() {
+func (s *Scheduler) AddJob(schedule string, job Job) error {
+	_, err := s.jobRunner.AddJob(schedule, job)
+	if err != nil {
+		return fmt.Errorf("can not schedule the job: %w", err)
+	}
 
+	return nil
+}
+
+func (s *Scheduler) Start() {
+	s.jobRunner.Start()
+}
+
+func (s *Scheduler) Stop() context.Context {
+	return s.jobRunner.Stop()
 }

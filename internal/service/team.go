@@ -32,3 +32,7 @@ func (ts *TeamService) Delete(userId int, teamId int) error {
 func (ts *TeamService) List(userId int) ([]model.Team, error) {
 	return ts.repo.List(userId)
 }
+
+func (ts *TeamService) GetTeamInfo(userId int) (model.Team, error) {
+	return ts.repo.GetTeamInfo(userId)
+}

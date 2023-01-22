@@ -10,7 +10,8 @@ CREATE TABLE teams
 (
     id serial not null unique CONSTRAINT teams_pk PRIMARY KEY,
     user_id int references users (id) on delete cascade not null,
-    title varchar(255) not null
+    title varchar(255) not null,
+    space_channel varchar(255) not null
 );
 
 CREATE TABLE teammates

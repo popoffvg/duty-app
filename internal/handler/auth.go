@@ -27,7 +27,7 @@ func (h *Handler) register(c *gin.Context) {
 		return
 	}
 
-	userId, err := h.services.CreateUser(input)
+	userId, err := h.services.Authorization.CreateUser(input)
 	if err != nil {
 		// todo: create custom errors.New() in repository and check here (for status badrequest if username is exist)
 		// todo: swagger description

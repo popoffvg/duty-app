@@ -106,3 +106,15 @@ func (tp *TeammatePostgres) List(userId, teamId int) ([]model.Teammate, error) {
 
 	return teammates, nil
 }
+
+func (tp *TeammatePostgres) ListReadyTeammates(teamId int) ([]model.Teammate, error) {
+	var teammates []model.Teammate
+	query := fmt.Sprintf(`SELECT id, team_id, name, duty_readiness, duties
+									FROM %s WHERE team_id = $1 and duty_readiness = true 
+									ORDER BY id`, teammatesTable)
+	if err := tp.db.Select(&teammates, query, teamId); err != nil {
+		return nil, err
+	}
+
+	return teammates, nil
+}

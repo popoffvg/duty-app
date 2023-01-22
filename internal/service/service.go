@@ -20,6 +20,8 @@ type Team interface {
 	Update(userId int, teamId int, input model.UpdateTeamInput) error
 	Delete(userId int, teamId int) error
 	List(userId int) ([]model.Team, error)
+
+	GetTeamInfo(teamId int) (model.Team, error)
 }
 
 type Teammate interface {
@@ -28,6 +30,8 @@ type Teammate interface {
 	Read(userId, teammateId int) (model.Teammate, error)
 	Delete(userId, teammateId int) error
 	List(userId, teamId int) ([]model.Teammate, error)
+
+	ListReadyTeammates(teamId int) ([]model.Teammate, error)
 }
 
 type Duty interface {
@@ -38,6 +42,12 @@ type Duty interface {
 
 	ReadCurrent(userId, teamId int) ([]model.Duty, error)
 	History(userId, teamId int) ([]model.History, error)
+
+	UpdateDutiesJob(timeNow time.Time) ([]model.Notification, error)
+}
+
+type Notifier interface {
+	SendNotification(channelName, text string) error
 }
 
 type Service struct {
@@ -45,13 +55,15 @@ type Service struct {
 	Team
 	Teammate
 	Duty
+	Notifier
 }
 
-func NewService(repo *repository.Repository) *Service {
+func NewService(repo *repository.Repository, notifier Notifier) *Service {
 	return &Service{
 		Authorization: NewAuthService(repo.Authorization),
 		Team:          NewTeamService(repo.Team),
 		Teammate:      NewTeammateService(repo.Teammate),
-		Duty:          NewDutyService(repo.Duty),
+		Duty:          NewDutyService(repo.Team, repo.Teammate, repo.Duty),
+		Notifier:      notifier,
 	}
 }

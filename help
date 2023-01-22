@@ -1,3 +1,7 @@
+Развертывание Postgres in Docker
+docker-compose up
+
+Мануал по миграциям: https://github.com/golang-migrate/migrate/blob/master/database/postgres/TUTORIAL.md
 migrate create -ext sql -dir ./schema -seq init
 migrate -path ./schema -database 'postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable' up
 migrate -path ./schema -database 'postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable' down
@@ -9,8 +13,26 @@ migrate -path ./schema -database 'postgres://postgres:postgres@localhost:5432/po
 4 select * from schema_migrations;
 5 update schema_migrations set version='1', dirty='f';
 
-
+Доступ к базе:
 docker ps
 docker exec -it 2e37ad5b2471 /bin/bash
 #> psql
-postgres=# \d
+postgres=# \dt
+postgres=# \x - expanded view mode
+
+postgres=# quit
+postgres@5bb15aa5e354:/$ exit
+
+Как запускать?
+- запустить докер
+- docker-compose up
+- migrate -path ./schema -database 'postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable' up
+- далее запуск приложения
+
+Как тестировать frontend?
+- cd frontend
+- yarn serve
+
+Как обновить frontend для production?
+- cd frontend
+- yarn build

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -10,10 +11,18 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+
 	"github.com/vitalygudza/duty-app/internal/handler"
-	"github.com/vitalygudza/duty-app/internal/http"
+	myHttp "github.com/vitalygudza/duty-app/internal/http"
+	"github.com/vitalygudza/duty-app/internal/job"
+	"github.com/vitalygudza/duty-app/internal/notifier"
 	"github.com/vitalygudza/duty-app/internal/repository"
+	"github.com/vitalygudza/duty-app/internal/scheduler"
 	"github.com/vitalygudza/duty-app/internal/service"
+)
+
+const (
+	debugMode = true
 )
 
 // @title Duty manager API
@@ -48,19 +57,42 @@ func main() {
 		logrus.Fatalf("failed to initialize db: %s", err.Error())
 	}
 
-	repo := repository.NewRepository(db)
-	services := service.NewService(repo)
-	handlers := handler.NewHandler(services)
+	notifyClient, err := notifier.NewSpaceClient(
+		os.Getenv("SPACE_ENDPOINT"),
+		os.Getenv("SPACE_TOKEN"),
+	)
+	if err != nil {
+		logrus.Fatalf("error occurred while initializing the notification client: %s", err.Error())
+	}
 
-	srv := new(http.Server)
+	scheduler, err := scheduler.NewScheduler()
+	if err != nil {
+		logrus.Fatalf("error occurred while initializing the scheduler: %s", err.Error())
+	}
+
+	repo := repository.NewRepository(db)
+	services := service.NewService(repo, notifyClient)
+	handlers := handler.NewHandler(services)
+	dutyJob := job.NewDutyUpdater(services, debugMode)
+
+	err = scheduler.AddJob(viper.GetString("duty_job_schedule"), dutyJob)
+	if err != nil {
+		logrus.Fatalf("error occurred while add job to scheduler: %s", err.Error())
+	}
+
+	scheduler.Start()
+
+	srv := new(myHttp.Server)
 	go func() {
-		if err := srv.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil {
+		if err := srv.Run(viper.GetString("port"), handlers.InitRoutes()); err != http.ErrServerClosed {
 			logrus.Fatalf("error occured while running http server: %s", err.Error())
 		}
 	}()
 
-	logrus.Println("Duty app started")
 	gracefulShutdown()
+
+	ctx := scheduler.Stop()
+	<-ctx.Done()
 
 	if err := srv.Shutdown(context.Background()); err != nil {
 		logrus.Errorf("error occured on server shutting down: %s", err.Error())
@@ -79,9 +111,11 @@ func initConfig() error {
 }
 
 func gracefulShutdown() {
+	logrus.Println("Duty app started")
+
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
 	<-quit
 
-	logrus.Println("Duty app shutting down")
+	logrus.Println("Duty app is shutting down")
 }

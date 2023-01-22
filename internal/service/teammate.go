@@ -32,3 +32,7 @@ func (ts *TeammateService) Delete(userId, teammateId int) error {
 func (ts *TeammateService) List(userId, teamId int) ([]model.Teammate, error) {
 	return ts.repo.List(userId, teamId)
 }
+
+func (ts *TeammateService) ListReadyTeammates(teamId int) ([]model.Teammate, error) {
+	return ts.repo.ListReadyTeammates(teamId)
+}

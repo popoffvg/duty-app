@@ -10,10 +10,10 @@ import (
 )
 
 func (h *Handler) SetAuthCookies(c *gin.Context, userId int) error {
-	// add cookie extention for security
+	// add cookie extension for security
 	c.SetSameSite(http.SameSite(2))
 
-	// set new access cookie
+	// set new access cookie TODO: add settings to Handler: viper must not be here
 	accessLifetime := viper.GetInt("cookies.access_lifetime")
 	accessToken, err := h.services.Authorization.GenerateToken(
 		time.Now().Add(time.Duration(accessLifetime)*time.Second),
@@ -48,6 +48,7 @@ func (h *Handler) SetAuthCookies(c *gin.Context, userId int) error {
 		refreshToken,
 		refreshLifetime,
 		"/",
+		// TODO: viper must not be here
 		viper.GetString("domain"),
 		false, // true for https
 		true,

@@ -44,6 +44,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			teams.DELETE("/:id", h.deleteTeam) // Delete team
 			teams.GET("/", h.listTeams)        // List teams
 
+			teams.GET("/:id/history", h.historyDuties) // Read team duties history
+
 			teammates := teams.Group(":id/teammates")
 			{
 				teammates.POST("/", h.createTeammate) // Create teammate
@@ -52,13 +54,16 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 			duties := teams.Group(":id/duties")
 			{
-				duties.POST("/", h.createDuty) // Create duty for teammate
-				duties.GET("/", h.listDuties)  // List duties
-
+				duties.POST("/", h.createDuty)   // Create duty for teammate
+				duties.GET("/", h.listDuties)    // List duties
 				duties.GET("/now", h.readDuties) // Read current duties (daily and weekly)
+				// duties.POST("/notify-daily", h.notifyDailyDuty) // Create notification for daily duty: TODO: for what this method?
 			}
 
-			teams.GET("/:id/history", h.historyDuties) // Read team duties history
+			notifications := teams.Group(":id/notifications")
+			{
+				notifications.POST("/test", h.sendTestNotification) // Send test notification to team's Space channel
+			}
 		}
 
 		teammates := api.Group("/teammates")
