@@ -68,7 +68,6 @@
 import axios from 'axios'
 import VueBasicAlert from 'vue-basic-alert'
 
-
 export default {
   components: {
     VueBasicAlert,
@@ -141,6 +140,8 @@ export default {
                   },
               );
         } else {
+          // todo: check if name of team is not empty
+
           // update team
           axios
               .put("api/teams/" + this.teams[data.index].id,

@@ -13,8 +13,6 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 import VueBasicAlert from 'vue-basic-alert'
 
-
-
 // Import Bootstrap an BootstrapVue CSS files (order is important)
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue-3/dist/bootstrap-vue-3.css'
@@ -30,8 +28,5 @@ app.use(BootstrapVue3)
 //app.use(IconsPlugin)
 app.use(VueBasicAlert)
 
-
-
 app.mount('#app')
-
 require('./assets/css/main.css');

@@ -36,7 +36,10 @@
                 </b-col>
               </b-row>
 
+
               <div class="history-block">
+                <a :href="'#/teams/' + teamId + '/settings'">settings</a>
+                &nbsp;
                 <a :href="'#/teams/' + teamId + '/history'">history</a>
               </div>
           </div>
@@ -302,7 +305,7 @@ export default {
     },
     addTeammate() {
       this.teammates.push(
-          { id: 0, team_id: this.teamId, name: "", duty_readiness: false, duties: 0, isEdit: "true" }
+          { id: 0, team_id: this.teamId, name: "", duty_readiness: true, duties: 0, isEdit: "true" }
       )
     },
     deleteTeammateRowHandler(data) {

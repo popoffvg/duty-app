@@ -6,6 +6,7 @@ import TeammatesView from '../views/TeammatesView.vue'
 import HistoryView from '../views/HistoryView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import LogoutView from '../views/LogoutView.vue'
+import SettingsView from '../views/SettingsView'
 
 const routes = [
   {
@@ -43,6 +44,12 @@ const routes = [
     path: '/teams/:teamId/history',
     name: 'history',
     component: HistoryView,
+    props: ({params}) => ({teamId: Number.parseInt(params.teamId, 10) || 0})
+  },
+  {
+    path: '/teams/:teamId/settings',
+    name: 'settings',
+    component: SettingsView,
     props: ({params}) => ({teamId: Number.parseInt(params.teamId, 10) || 0})
   },
   {
