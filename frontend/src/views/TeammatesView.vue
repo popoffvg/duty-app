@@ -170,7 +170,7 @@ export default {
         { key: "index", label: "#"},
         { key: "name", label: "Name"},
         { key: "duty_readiness", label: "Ready?"},
-        { key: "duties", label: "Duties"},
+        { key: "duties", label: "W.Duties"},
         { key: "options", label: "Options"},
       ],
       teammates: [

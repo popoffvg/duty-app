@@ -125,7 +125,7 @@ export default {
               { withCredentials: true })
           .then(
               () => {
-                this.$refs.alertSettings.showAlert("success", "notification was send", "Success");
+                this.$refs.alertSettings.showAlert("success", "notification was sended", "Success");
               },
               error => {
                 console.log('Error send test notification: ', error);

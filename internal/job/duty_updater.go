@@ -25,13 +25,13 @@ func NewDutyUpdater(services *service.Service, debugMode bool) *DutyUpdater {
 
 func (du *DutyUpdater) Run() {
 	timeNow := time.Now()
-
-	// todo: debug
 	if du.debugMode {
-		du.timeNow = du.timeNow.AddDate(0, 0, 1)
 		timeNow = du.timeNow
-		logrus.Infof("debug mode: run duty updater for date: %s", du.timeNow.Format("02-01-2006"))
+		// update day for next mock iteration
+		du.timeNow = du.timeNow.AddDate(0, 0, 1)
 	}
+
+	logrus.Infof("run duty updater for date: %s", timeNow.Format("02-01-2006"))
 
 	newDuties, err := du.services.Duty.UpdateDutiesJob(timeNow)
 	if err != nil {
